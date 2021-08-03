@@ -12,6 +12,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,6 +36,7 @@ public class TestSel {
     @AfterEach
     public void tearDown() {
         webDriver.close();
+        webDriver.quit();
 
     }
 
@@ -83,17 +85,18 @@ public class TestSel {
 
     }
 
+    /**
+     * When 2 nodes are found, tell selenium to select the second element found
+     * You can do this by appending an index number at the end of the xpath or css selector
+     */
     @Test
-    public void test_dynamic_drop_down()  {
-
-        //whe 2 nodes are found, tell selenium to select the second element found
-//        You can do this by appending an index number at the end of the xpath or css selector
+    public void test_dynamic_drop_down() {
 
 
         WebElement departureDropdown = webDriver.findElement(By.xpath("//input[@id='ctl00_mainContent_ddl_originStation1_CTXT']"));
         departureDropdown.click();
 
-        WebElement departureCity= webDriver.findElement(By.xpath("//a[@value='IXB']"));
+        WebElement departureCity = webDriver.findElement(By.xpath("//a[@value='IXB']"));
         departureCity.click();
         String cityName = departureDropdown.getAttribute("value");
         assertEquals("Bagdogra (IXB)", cityName);
@@ -105,17 +108,48 @@ public class TestSel {
         WebElement selectedDst = webDriver.findElement(By.xpath("//a[@value='DEL']"));
 
         new WebDriverWait(webDriver, Duration.ofSeconds(10).toSeconds())
-                .until(webDriver ->selectedDst).click();
+                .until(webDriver -> selectedDst).click();
 
         String selectedDestination = destinationDropDown.getAttribute("value");
         assertEquals("Delhi (DEL)", selectedDestination);
 
+    }
 
+    /**
+     * Testing UI with suggestive dropdown.
+     * The users input is grabbed from the input box and a loop goes through all
+     * list of suggested values. getText() is called on each iteration and the value is compared to
+     * the test entered by the user
+     */
 
+    @Test
+    public void test_input_suggestion_dropdown() {
 
+        WebElement userInput = webDriver.findElement(By.id("autosuggest"));
 
+        userInput.sendKeys("Argentina");
+
+        List<WebElement> options = webDriver.findElements(By.cssSelector("li[class='ui-menu-item'] a"));
+
+        options.forEach(el -> {
+            if (el.getText().equalsIgnoreCase("Argentina")) {
+                el.click();
+            }
+
+        });
+
+    }
+    /*
+    Handling checkbox
+     */
+
+    @Test
+    public void test_check_box() {
+      WebElement datePicker  = webDriver.findElement(By.id("ctl00_mainContent_chk_friendsandfamily"));
+      datePicker.click();
+
+      assert(datePicker.isSelected());
 
 
     }
-
 }
