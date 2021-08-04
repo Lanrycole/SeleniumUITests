@@ -3,6 +3,7 @@ package Test;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,7 +17,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 
-public class TestSel {
+public class FlightBookingUITest {
     WebDriver webDriver;
 
     @Before
@@ -144,13 +145,13 @@ public class TestSel {
 
     @Test
     public void test_check_box() {
-      WebElement checker  = webDriver.findElement(By.id("ctl00_mainContent_chk_friendsandfamily"));
-      assertFalse(checker.isSelected());
+        WebElement checker = webDriver.findElement(By.id("ctl00_mainContent_chk_friendsandfamily"));
+        assertFalse(checker.isSelected());
         checker.click();
 
-      assert(checker.isSelected());
+        assert (checker.isSelected());
 
-       List<WebElement> elem  = webDriver.findElements(By.cssSelector("input[type=checkbox]"));
+        List<WebElement> elem = webDriver.findElements(By.cssSelector("input[type=checkbox]"));
 
         System.out.println(elem.size());
 
@@ -161,22 +162,40 @@ public class TestSel {
      * Checking UI elements that depends on eachother
      */
     @Test
-    public void check_disabled(){
+    public void check_disabled() {
 
         WebElement oneWay = webDriver.findElement(By.id("ctl00_mainContent_rbtnl_Trip_0"));
         assertTrue(oneWay.isSelected());
         WebElement returnTrip = webDriver.findElement(By.id("Div1"));
-        boolean val  = returnTrip.getAttribute("style").contains("0.5");
+        boolean val = returnTrip.getAttribute("style").contains("0.5");
         assertTrue(val);
 
 
         WebElement twoWay = webDriver.findElement(By.id("ctl00_mainContent_rbtnl_Trip_1"));
         twoWay.click();
         assertTrue(twoWay.isSelected());
-        boolean val2  = returnTrip.getAttribute("style").contains("1");
+        boolean val2 = returnTrip.getAttribute("style").contains("1");
         assertTrue(val2);
 
 
+    }
+
+    @Test
+    public void handle_pop_up() {
+
+        webDriver.get("https://rahulshettyacademy.com/AutomationPractice/");
+        WebElement name = webDriver.findElement(By.id("name"));
+        WebElement btn = webDriver.findElement(By.id("confirmbtn"));
+        name.sendKeys("Lanre");
+        btn.click();
+
+
+        //This wil switch the selenuim to handle Javascript alert
+        Alert alert = webDriver.switchTo().alert();
+
+        //alert.getTExt() will get the text of an alert
+
+        assertEquals("Hello Lanre, Are you sure you want to confirm?", alert.getText());
     }
 
 }
