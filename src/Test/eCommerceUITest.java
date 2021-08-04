@@ -8,7 +8,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class eCommerceUITest {
     WebDriver webDriver;
@@ -34,30 +39,39 @@ public class eCommerceUITest {
     }
 
     @Test
-    public void add_items_to_cart() {
+    public void add_items_to_cart() throws InterruptedException {
 
-         WebElement addBtn = webDriver.findElement(By.xpath("/html/body/div/div/div[1]/div/div[1]/div[2]/a[2]"));
-        WebElement inputValue = webDriver.findElement(By.xpath("/html/body/div/div/div[1]/div/div[1]/div[2]/input"));
-        WebElement orderPrice = webDriver.findElement(By.cssSelector("div.product:nth-child(1) > p:nth-child(3)"));
+
+        // You can get the Xpath of an HTML element by using the text. e.g //button[text()="text"]
         WebElement orderTotal = webDriver.findElement(By.xpath("/html/body/div/div/header/div/div[3]/div[1]/table/tbody/tr[2]/td[3]/strong"));
-        assertEquals("120", orderPrice.getText());
-        addBtn.click();
-        addBtn.click();
-        assertEquals("3", inputValue.getAttribute("value"));
 
+        List<WebElement> productsList = webDriver.findElements(By.cssSelector("H4.PRODUCT-NAME"));
 
-        WebElement addToCart = webDriver.findElement(By.cssSelector("div.product:nth-child(1) > div:nth-child(5) > button:nth-child(1)"));
-        addToCart.click();
+        List<String> name = new ArrayList<>();
+        name.add("Cucumber");
+        name.add("Brocolli");
 
-        assertEquals("360", orderTotal.getText());
+        int j = 0;
+        for (int i = 0; i < productsList.size(); i++) {
+            String pName = productsList.get(i).getText();
+            String[] split = pName.split("-");
 
+            if (name.contains(split[0].trim())) {
+//
+                System.out.println(productsList.get(i).getText());
+                webDriver.findElements(By.xpath("//a[@class= 'increment']")).get(i).click();
+                webDriver.findElements(By.xpath("//div[@class='product-action']/button")).get(i).click();
+                j++;
+                //breaking out of loop if all items are met
+                if (j == 3) {
+                    break;
+                }
+            }
+        }
+
+        assertEquals("336", orderTotal.getText());
         webDriver.get("https://rahulshettyacademy.com/seleniumPractise/#/cart");
-
         WebElement grandTotal = webDriver.findElement(By.xpath("/html/body/div/div/div/div/div/span[1]"));
-
-        assertEquals("360", grandTotal.getText());
-
+        assertEquals("336", grandTotal.getText());
     }
-
-
 }
